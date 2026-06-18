@@ -1,4 +1,4 @@
-# PN2.0_NCBI_submission_pipeline
+# pulsenet2.0-ncbi-tools
 
 This repo includes a python package ([pn_ncbi_pkg](src/pn_ncbi_pkg/)) that provides methods to perform the following actions related to submission to NCBI BioSample and SRA databases:
 
