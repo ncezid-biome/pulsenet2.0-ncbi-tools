@@ -10,8 +10,6 @@ This repo includes a python package ([pn_ncbi_pkg](src/pn_ncbi_pkg/)) that provi
 
 Included in the package is a command line interface to use the components of the pn_ncbi_pkg package for the key steps in NCBI database submissions and accession retrieval. Additionally, a nextflow pipeline script ([main.nf](main.nf)) is included which wraps the command line scripts to perform end-to-end sample metadata validation and submission workflows for initial submission or existing submission edits, and an accession retrieval workflow.
 
-Description of the design of the components of this repo is provided in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
-
 ## Nextflow pipeline
 
 The Nextflow pipeline wraps the command line interface of the [pn_ncbi_pkg](src/pn_ncbi_pkg/) package. The following parameters are required for each of the three workflows and can be used to control the behavior of the pipeline:
