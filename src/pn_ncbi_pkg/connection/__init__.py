@@ -1,0 +1,9 @@
+from .connection import Connection as Connection
+from .connection import FTPConnection as FTPConnection
+from .connection import SFTPConnection as SFTPConnection
+from .connection import connect as connect
+from .connection import get_connection as get_connection
+from .errors import ConnectionConfigError as ConnectionConfigError
+from .errors import MissingConnectionSettingError as MissingConnectionSettingError
+from .errors import NCBIConnectionError as NCBIConnectionError
+from .errors import UnsupportedProtocolError as UnsupportedProtocolError

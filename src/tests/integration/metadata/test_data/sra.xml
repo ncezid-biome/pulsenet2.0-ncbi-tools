@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<Submission>
+  <Description>
+    <Comment>Not Provided</Comment>
+    <Organization role="owner" type="consortium">
+      <Name>CDC</Name>
+      <Contact email="email@email.gov">
+        <Name>
+          <First>Pulsenet</First>
+          <Last>CDC</Last>
+        </Name>
+      </Contact>
+    </Organization>
+  </Description>
+  <Action>
+    <AddFiles target_db="SRA">
+      <File file_path="r1.fq">
+        <DataType>generic-data</DataType>
+      </File>
+      <File file_path="r2.fq">
+        <DataType>generic-data</DataType>
+      </File>
+      <Attribute name="instrument_model">Illumina MiSeq</Attribute>
+      <Attribute name="library_strategy">WGS</Attribute>
+      <Attribute name="library_source">GENOMIC</Attribute>
+      <Attribute name="library_selection">RANDOM</Attribute>
+      <Attribute name="library_layout">PAIRED</Attribute>
+      <Attribute name="library_construction_protocol">Illumina DNA Prep</Attribute>
+      <Attribute name="library_name">Not Provided</Attribute>
+      <AttributeRefId name="BioProject">
+        <RefId>
+          <PrimaryId>BP</PrimaryId>
+        </RefId>
+      </AttributeRefId>
+      <AttributeRefId name="BioSample">
+        <RefId>
+          <PrimaryId db="BioSample">bs_acc</PrimaryId>
+        </RefId>
+      </AttributeRefId>
+      <Identifier>
+        <SPUID spuid_namespace="some_namespace_sra">spuid_sra</SPUID>
+      </Identifier>
+    </AddFiles>
+  </Action>
+</Submission>

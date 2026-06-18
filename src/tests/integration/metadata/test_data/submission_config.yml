@@ -1,0 +1,30 @@
+---
+NCBI_username: UNAME
+NCBI_password: PASS
+NCBI_ftp_host: 'ftp-private.ncbi.nlm.nih.gov'
+NCBI_sftp_host: 'sftp-private.ncbi.nlm.nih.gov'
+NCBI_API_URL: 'https://submit.ncbi.nlm.nih.gov/api/2.0/files/FILE_ID/?format=attachment'
+table2asn_email: 'gb-admin@ncbi.nlm.nih.gov'
+BioSample_package: "OneHealthEnteric.1.0"
+Role: owner
+Type: consortium
+Org_ID: ""
+Submitting_Org: CDC
+Submitting_Org_Dept:
+Street: 1600 Clifton Rd
+City: Atlanta
+State: GA
+Postal_code: 30329
+Country: USA
+Email: email@email.gov
+Phone: ""
+Specified_Release_Date: ""
+Submitter:
+  '@email': email@email.gov
+  '@alt_email': email@email.gov
+  Name:
+    First: Pulsenet
+    Last: CDC
+GISAID_client-id: TEST-EA76875B00C3
+GISAID_username: username
+GISAID_password: password

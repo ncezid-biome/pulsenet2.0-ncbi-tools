@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<Submission>
+  <Description>
+    <Comment>Not Provided</Comment>
+    <Organization role="owner" type="consortium">
+      <Name>CDC</Name>
+      <Contact email="email@email.gov">
+        <Name>
+          <First>Pulsenet</First>
+          <Last>CDC</Last>
+        </Name>
+      </Contact>
+    </Organization>
+  </Description>
+  <Action>
+    <AddData target_db="BioSample">
+      <Data content_type="XML">
+        <XmlContent>
+          <BioSample schema_version="2.0">
+            <SampleId>
+              <SPUID spuid_namespace="some_namespace">spuid</SPUID>
+            </SampleId>
+            <Descriptor/>
+            <Organism>
+              <OrganismName>Escherichia coli</OrganismName>
+            </Organism>
+            <BioProject>
+              <PrimaryId>BP</PrimaryId>
+            </BioProject>
+            <Package>OneHealthEnteric.1.0</Package>
+            <Attributes>
+              <Attribute attribute_name="strain">strain_name</Attribute>
+              <Attribute attribute_name="sample_name">test_sample</Attribute>
+              <Attribute attribute_name="author">author_name</Attribute>
+              <Attribute attribute_name="serovar">serovar_name</Attribute>
+              <Attribute attribute_name="source_type">Food</Attribute>
+              <Attribute attribute_name="isolate_name_alias">test_sample</Attribute>
+              <Attribute attribute_name="isolation_source">source</Attribute>
+              <Attribute attribute_name="geo_loc_name">USA:TX</Attribute>
+              <Attribute attribute_name="collection_date">1/30/2002</Attribute>
+              <Attribute attribute_name="collected_by">collector</Attribute>
+              <Attribute attribute_name="project_name">project</Attribute>
+              <Attribute attribute_name="sequenced_by">sequencer</Attribute>
+              <Attribute attribute_name="intended_consumer">consumer</Attribute>
+              <Attribute attribute_name="food_origin">origin</Attribute>
+              <Attribute attribute_name="food_processing_method">food_proc_method</Attribute>
+              <Attribute attribute_name="purpose_of_sampling">purpose</Attribute>
+            </Attributes>
+          </BioSample>
+        </XmlContent>
+      </Data>
+      <Identifier>
+        <SPUID spuid_namespace="some_namespace">spuid</SPUID>
+      </Identifier>
+    </AddData>
+  </Action>
+</Submission>

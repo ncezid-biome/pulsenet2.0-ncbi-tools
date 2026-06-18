@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pn_ncbi_pkg"
+version = "2.0"
+authors = [
+  { name="Alan Collins", email="ukq0@cdc.gov" },
+]
+maintainers = [
+  { name="Alan Collins", email="ukq0@cdc.gov" },
+]
+description = "A Python package and wrapper scripts to submit to the NCBI SRA and Biosample databases and retrieve accessions."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: Unix",
+]
+dependencies = [
+  "pyyaml",
+  "paramiko",
+]
+
+[project.scripts]
+pn-ncbi = "pn_ncbi_pkg.cli.main:main"
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.lint]
+# 1. Enable specific rule categories
+# Common codes: E (pycodestyle), F (Pyflakes), I (isort), 
+# B (flake8-bugbear), UP (pyupgrade), N (pep8-naming)
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort (import sorting)
+    "B",      # flake8-bugbear (common bugs)
+    "UP",     # pyupgrade (modernize syntax)
+    "N",      # pep8-naming
+    "RUF",    # Ruff-specific rules
+    "ANN001", # Missing func arg type annotations
+]
+
+ignore = [
+    "E501", # Line too long
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/tests/**/*.py" = ["ANN001"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.15.13",
+    "ty>=0.0.39",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["src/tests"]
+addopts = "-ra"

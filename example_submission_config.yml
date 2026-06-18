@@ -1,0 +1,11 @@
+---
+NCBI_username: NAME
+NCBI_password: PASS
+Role: ROLE
+Type: TYPE
+Submitting_Org: ORG
+Email: your@email.com
+Submitter:
+  Name:
+    First: NAME
+    Last: NAME
