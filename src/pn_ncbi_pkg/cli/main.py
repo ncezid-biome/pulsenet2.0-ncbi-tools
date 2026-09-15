@@ -11,6 +11,7 @@ from pn_ncbi_pkg.cli import (
     make_submission_xml,
     prepare_csv,
     submit,
+    validate_biosample_xml,
 )
 
 
@@ -26,6 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     submit.add_parser(subparsers)
     get_submission_dir.add_parser(subparsers)
     get_accessions.add_parser(subparsers)
+    validate_biosample_xml.add_parser(subparsers)
 
     return parser
 

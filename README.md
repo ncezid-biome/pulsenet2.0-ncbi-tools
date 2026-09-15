@@ -41,9 +41,22 @@ nextflow run main.nf \
 
 For `submit_new` workflow runs the `metadata_csv` file must include the fields described in the [Metadata fields section](#metadata-fields) below.
 
-### Edit submission workflow ('--workflow biosample_edit`)
+### Edit submission workflow ('--workflow biosample_prep` and '--workflow biosample_edit`)
 
-**Example command:**
+Editing an existing Biosample submission involves two steps. First, the existing sample metadata are retrieved and validated. Any issues with the existing metadata (for example violations of rules that were added after the original submission) must be corrected before submitting the edit to avoid rejection by Biosample.
+
+**Example prep command:**
+
+```shell
+nextflow run main.nf \
+    -c <nf.config> \
+    --workflow biosample_prep \
+    --edit_csv </path/to/edit.csv> \
+    --submission_type <Test | Production> \
+    --publish_dir </path/to/publish_dir>
+```
+
+**Example edit command:**
 
 ```shell
 nextflow run main.nf \
@@ -63,6 +76,8 @@ nextflow run main.nf \
 | meta_package    | Which BioSample metadata package should be used for validataion? ["OneHealthEnteric.1.0", "Pathogen.cl.1.0"] |
 | submission_yaml | Path to yaml with NCBI FTP/SFTP address and credentials                                                      |
 | protocol        | Should the submission use FTP or SFTP? ["ftp", "sftp"]                                                       |
+
+For `biosample_prep` workflow runs only two fields are needed in the `edit_csv`. The value expected for those two fields depends on whether you are are submitting to the NCBI Production or Test databases. For production database submissions, `sample` and `biosample` are required (where `biosample` is the SAMN accession of the existing submission.) Existing metadata will be retrieved from the NCBI database using that information. For test database submissions no public source exists to retrieve existing submission data. Therefore, test database edits require `sample` and `submission_xml`, where `submission_xml` is the path to the `submission.xml` file that was used for the original submission. Because metadata cannot be retrieved for test database submissions, that `submission.xml` is used as the source of the metadata for the existing biosample entry.
 
 For `biosample_edit` workflow runs, the metadata fields provided will overwrite existing data in the target sample entry in the BioSample database. See the [Metadata fields section](#metadata-fields) below for required and forbidden field information.
 

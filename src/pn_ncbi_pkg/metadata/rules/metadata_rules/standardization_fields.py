@@ -86,3 +86,27 @@ class GeoLocNameFromCountryState(StandardizationRule):
             remove_fields=("country", "state") if state is not None else ("country",),
         ))
 
+class RemoveMissingFields(StandardizationRule):
+    """Remove fields that are missing based on the provided set of null fields."""
+    def __init__(self, cannot_be_missing: set[str]):
+        self.cannot_be_missing = cannot_be_missing
+
+    def __call__(self, metadata: Metadata) -> TransformResult:
+        removals = [key for key, value in metadata.items() if value.lower() == "missing" and key.lower() in self.cannot_be_missing]
+        return Ok(MetadataPatch({}, tuple(removals)))
+
+class RemoveBlankStrings(StandardizationRule):
+    """Remove fields that are blank strings from the metadata."""
+    def __call__(self, metadata: Metadata) -> TransformResult:
+        removals = [key for key, value in metadata.items() if value.strip() == ""]
+        return Ok(MetadataPatch({}, tuple(removals)))
+
+class RemoveNullValues(StandardizationRule):
+    """Remove fields that are blank strings from the metadata."""
+    def __init__(self, null_values: set[str]):
+        self.null_values = null_values
+
+    def __call__(self, metadata: Metadata) -> TransformResult:
+        removals = [key for key, value in metadata.items() if value.strip() in self.null_values]
+        return Ok(MetadataPatch({}, tuple(removals)))
+

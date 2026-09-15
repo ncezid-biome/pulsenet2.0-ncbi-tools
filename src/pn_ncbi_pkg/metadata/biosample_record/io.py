@@ -43,9 +43,6 @@ def load_biosample_xml(xml_path: str) -> BioSampleRecord:
 
         bs_elem = required_elem(root, "BioSample")
 
-        # BioSample accession
-        biosample: str = required_attr(bs_elem, "accession", context="BioSampleSet/BioSample")
-
         # spuid and namespace
         ids_elem = required_elem(bs_elem, "Ids")
 
@@ -85,7 +82,6 @@ def load_biosample_xml(xml_path: str) -> BioSampleRecord:
         bioproject = required_attr(link_elem, "label", context="Links/Link")
 
         return BioSampleRecord(
-            biosample=biosample,
             bioproject=bioproject,
             spuid=spuid,
             spuid_namespace=spuid_ns,
@@ -98,7 +94,7 @@ def load_biosample_xml(xml_path: str) -> BioSampleRecord:
         raise XMLParseError("Existing BioSample XML seems malformed and could not be parsed") from err
 
 
-def load_submission_xml(xml_path: str, biosample: str) -> BioSampleRecord:
+def load_submission_xml(xml_path: str) -> BioSampleRecord:
     try:
         xml = ET.parse(xml_path)
         root = xml.getroot()
@@ -133,7 +129,6 @@ def load_submission_xml(xml_path: str, biosample: str) -> BioSampleRecord:
             attributes[attr_name] = attr_value
 
         return BioSampleRecord(
-            biosample=biosample,
             bioproject=bioproject,
             spuid=spuid,
             spuid_namespace=spuid_ns,

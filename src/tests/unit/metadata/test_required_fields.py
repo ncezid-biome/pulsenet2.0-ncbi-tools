@@ -63,3 +63,24 @@ def test_missing_biosample_constructor_fields_return_validation_errors(
         f"When {raw_field} is missing, the error should mention {expected_message_fragment}"
     )
 
+@pytest.mark.parametrize(
+    ("raw_field", "expected_message_fragment"),
+    [
+        ("isolation_source", "isolation_source"),
+        ("strain", "strain"),
+        ("source_type", "source_type"),
+    ],
+)
+def test_missing_ohe_constructor_fields_return_validation_errors(
+    raw_field,
+    expected_message_fragment,
+):
+    metadata = valid_ohe_metadata(**{raw_field: _DELETE})
+    print(metadata)
+    result = prepare_metadata_for_submission(metadata, SubmissionDB.BIOSAMPLE)
+
+    assert isinstance(result, Err), f"missing mandatory field {raw_field} should return Err"
+    assert expected_message_fragment in error_text(result).lower(), (
+        f"When {raw_field} is missing, the error should mention {expected_message_fragment}"
+    )
+

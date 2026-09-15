@@ -35,7 +35,6 @@ def opened_xml(monkeypatch):
 def test_bs_record_contains_expected_fields_from_public_xml(opened_xml):
     record = load_biosample_xml("existing_bs.xml")
 
-    assert record.biosample == "SAMN12345"
     assert record.bioproject == "PRJNA56789"
     assert record.spuid == "PNUSAS12345"
     assert record.spuid_namespace == "EDLB-CDC"
@@ -58,15 +57,14 @@ def test_bs_record_contains_expected_fields_from_public_xml(opened_xml):
     }
 
 @pytest.mark.parametrize(
-    ("report_xml", "biosample"),
+    ("report_xml"),
     [
-        ("submission_bs.xml", "SAMN12345"),
-        ("submission_comb.xml", "SAMN12345"),
+        ("submission_bs.xml"),
+        ("submission_comb.xml"),
     ],
 )
-def test_bs_record_contains_expected_fields_from_sub_xmls(opened_xml, report_xml, biosample):
-    record = load_submission_xml(report_xml, biosample)
-    assert record.biosample == "SAMN12345"
+def test_bs_record_contains_expected_fields_from_sub_xmls(opened_xml, report_xml):
+    record = load_submission_xml(report_xml)
     assert record.spuid == "spuid"
     assert record.spuid_namespace == "some_namespace"
     assert record.package == BioSamplePackage.OHE

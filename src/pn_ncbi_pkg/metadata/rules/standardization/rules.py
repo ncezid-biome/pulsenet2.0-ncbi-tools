@@ -1,6 +1,9 @@
 from ..metadata_rules.standardization_fields import (
     CanonicalizeFieldNames,
     GeoLocNameFromCountryState,
+    RemoveBlankStrings,
+    RemoveMissingFields,
+    RemoveNullValues,
 )
 
 ALL_ALIASES = {
@@ -19,6 +22,31 @@ SRA_ALIASES = {
     "illumina_library_name": "library_name"
 }
 
+CANNOT_BE_MISSING_FIELDS = {
+    "subspecies",
+    "sub_species",
+    "sub species",
+    "sub-species",
+    "variety",
+    "forma",
+    "forma_specialis",
+    "serovar"
+}
+
+NULL_VALUES = {
+    "?",
+    "n/a",
+    "na",
+    "none",
+    "not available",
+    "not determined",
+    "not recorded",
+    "null",
+    "unk",
+    "unknown",
+    "unspecified",
+}
+
 bs_only_canonicalize = CanonicalizeFieldNames(ALL_ALIASES)
 
 sra_only_canonicalize = CanonicalizeFieldNames(ALL_ALIASES | SRA_ALIASES)
@@ -26,3 +54,9 @@ sra_only_canonicalize = CanonicalizeFieldNames(ALL_ALIASES | SRA_ALIASES)
 both_canonicalize = CanonicalizeFieldNames(ALL_ALIASES | SRA_ALIASES)
 
 bs_geo_loc_name = GeoLocNameFromCountryState()
+
+remove_missing = RemoveMissingFields(CANNOT_BE_MISSING_FIELDS)
+
+remove_blanks = RemoveBlankStrings()
+
+remove_nulls = RemoveNullValues(NULL_VALUES)

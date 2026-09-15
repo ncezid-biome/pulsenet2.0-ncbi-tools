@@ -11,9 +11,7 @@ from tests.helpers import valid_ohe_metadata
     [
         ("author", "CDC"),
         ("spuid_namespace", "EDLB-CDC"),
-        ("strain", "missing"),
         ("collected_by", "missing"),
-        ("isolation_source", "missing"),
         ("purpose_of_sampling", "missing"),
     ],
 )

@@ -22,6 +22,11 @@ class Metadata(dict[str,str]):
         for field in mp.remove_fields:
             del self[field]
 
+    def copy(self) -> Metadata:
+        return Metadata(super().copy(), package=self.package)
+
+
+
 
 
 

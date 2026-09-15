@@ -7,15 +7,7 @@ from pn_ncbi_pkg.metadata import (
     BioSamplePackage,
     metadata_from_csv,
     metadata_to_xml,
-    prepare_metadata_for_edit,
-)
-from pn_ncbi_pkg.metadata.biosample_record.conversion import (
-    to_metadata as bs_to_metadata,
-)
-from pn_ncbi_pkg.metadata.biosample_record.io import (
-    XMLParseError,
-    load_biosample_xml,
-    load_submission_xml,
+    prepare_edited_metadata_for_submission,
 )
 from pn_ncbi_pkg.report.ppo import write_ppo
 from pn_ncbi_pkg.result import Err, Ok
@@ -37,18 +29,6 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
-    source = parser.add_mutually_exclusive_group(required=True)
-    source.add_argument(
-        "--existing-biosample-xml",
-        metavar="",
-        help="The sample xml retrieved using entrez utils"
-    )
-    source.add_argument(
-        "--original-submission-xml",
-        metavar="",
-        help="The submission.xml used when this sample was originally submitted to BioSample"
-    )
-
     parser.add_argument(
         "--update-csv",
         metavar="",
@@ -95,25 +75,7 @@ def run(args: argparse.Namespace) -> int:
 
     update_metadata: Metadata = metadata_from_csv(args.update_csv, meta_package)
 
-    try:
-        if args.original_submission_xml:
-            biosample = update_metadata.get("biosample")
-            if biosample is None:
-                errors = ["biosample is required for an edit using the original submission xml"]
-                write_failure(args, errors)
-                return 0
-            record = load_submission_xml(args.original_submission_xml, biosample)
-
-        else:
-            record = load_biosample_xml(args.existing_biosample_xml)
-
-        existing_metadata = bs_to_metadata(record)
-    except XMLParseError as e:
-        errors = [f"Unable to parse biosample xml: {e!s}"]
-        write_failure(args, errors)
-        return 0
-
-    match prepare_metadata_for_edit(existing_metadata, update_metadata):
+    match prepare_edited_metadata_for_submission(update_metadata):
         case Ok(fixed_metadata):
             metadata = fixed_metadata
 

@@ -64,7 +64,7 @@ process PREPARE_CSV {
 }
 
 
-process PREPARE_EDIT_CSV {
+process PREPARE_BIOSAMPLE_CHECK_CSV {
     tag "$sample"
 
     input:
@@ -155,6 +155,26 @@ process FETCH_BIOSAMPLE_XML {
     """
 }
 
+process VALIDATE_BIOSAMPLE_XML {
+    tag "$sample"
+    stageInMode 'copy'
+    publishDir { "${params.publish_dir}/${sample}" }, mode: 'copy', overwrite: true, pattern: 'PipelineProcessOutputs.json'
+
+    input:
+        tuple val(sample), path(biosample_csv), path(source_xml, stageAs: 'existing.xml'), val(source_arg)
+
+    output:
+        tuple val(sample), path("PipelineProcessOutputs.json"), emit: ppo
+
+    script:
+    """
+    pn-ncbi validate-bs-xml \
+        $source_arg existing.xml \
+        --metadata-package "$params.meta_package" \
+        --submission-yaml "$params.submission_yaml" \
+        --out-ppo PipelineProcessOutputs.json 
+    """
+}
 
 process MAKE_BIOSAMPLE_EDIT_XML {
     tag "$sample"
@@ -162,7 +182,7 @@ process MAKE_BIOSAMPLE_EDIT_XML {
     publishDir { "${params.publish_dir}/${sample}" }, mode: 'copy', overwrite: true, pattern: 'PipelineProcessOutputs.json'
 
     input:
-        tuple val(sample), path(update_csv), path(source_xml, stageAs: 'existing.xml'), val(source_arg)
+        tuple val(sample), path(update_csv)
 
     output:
         tuple val(sample), path("submission.xml"), env("QC"), emit: xml
@@ -171,7 +191,6 @@ process MAKE_BIOSAMPLE_EDIT_XML {
     script:
     """
     pn-ncbi make-bs-edit-xml \
-        $source_arg existing.xml \
         --update-csv "$update_csv" \
         --metadata-package "$params.meta_package" \
         --submission-yaml "$params.submission_yaml" \
@@ -295,8 +314,7 @@ workflow submit_new {
     SUBMIT(files_to_submit)
 }
 
-
-workflow biosample_edit {
+workflow biosample_prep {
     requireParam('edit_csv')
     requireParam('submission_yaml')
 
@@ -318,7 +336,7 @@ workflow biosample_edit {
             tuple(hasSubXml ? hasSubXml[0] : false, records)
         }
 
-    PREPARE_EDIT_CSV(
+    PREPARE_BIOSAMPLE_CHECK_CSV(
         edit_rows.flatMap { hasSubXml, records ->
             records.collect { record ->
                 def sample = record[0]
@@ -359,13 +377,28 @@ workflow biosample_edit {
         }
     )
 
-    edit_inputs = PREPARE_EDIT_CSV.out.prepared
+    biosample_check= PREPARE_BIOSAMPLE_CHECK_CSV.out.prepared
         .join(source_xmls)
-        .map { sample, update_csv, source_xml, source_arg ->
-            tuple(sample, update_csv, source_xml, source_arg)
+        .map { sample, biosample_csv, source_xml, source_arg ->
+            tuple(sample, biosample_csv, source_xml, source_arg)
         }
 
-    MAKE_BIOSAMPLE_EDIT_XML(edit_inputs)
+    VALIDATE_BIOSAMPLE_XML(biosample_check)
+}
+
+workflow biosample_edit {
+    requireParam('edit_csv')
+    requireParam('submission_yaml')
+
+    rows = sampleRows(params.edit_csv)
+
+    PREPARE_CSV(
+        rows.map { sample, row ->
+            tuple(sample, file(params.edit_csv))
+        }
+    )
+
+    MAKE_BIOSAMPLE_EDIT_XML(PREPARE_CSV.out.prepared)
 
     files_to_submit = filterQCFail(MAKE_BIOSAMPLE_EDIT_XML.out.xml)
         .map { sample, xml ->
@@ -393,6 +426,9 @@ workflow get_accessions {
 workflow {
     if (params.workflow == 'submit_new') {
         submit_new()
+    }
+    else if (params.workflow == 'biosample_prep') {
+        biosample_prep()
     }
     else if (params.workflow == 'biosample_edit') {
         biosample_edit()

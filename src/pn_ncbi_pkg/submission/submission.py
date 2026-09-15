@@ -192,6 +192,7 @@ class BioSampleXMLMixin:
             "files",
             "file1",
             "file2",
+            "file_location",
             "instrument_model",
             "library_strategy",
             "library_source",

@@ -19,6 +19,20 @@ class MetadataPatch:
         """Used to indicate a success with no changes needed"""
         return cls()
 
+
+@dataclass(frozen=True)
+class MetadataAnnotation:
+    """Class to track changes made to a Metadata"""
+    metadata: Metadata
+    changes: dict[str, str] = field(default_factory=dict)
+    issues: MetadataFailure|None = None
+
+    @classmethod
+    def no_change(cls, metadata: Metadata) -> MetadataAnnotation:
+        """Used to indicate a success with no changes needed"""
+        return cls(metadata)
+
+
 class MetadataPhase(Enum):
     """Phases that can find metadata issues"""
     STANDARDIZATION = "standardization"

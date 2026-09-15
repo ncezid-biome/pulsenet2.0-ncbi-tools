@@ -44,6 +44,38 @@ def valid_ohe_metadata(**overrides: str | _DeleteSentinel):
     return Metadata(data, package=BioSamplePackage.OHE)
 
 
+def valid_existing_ohe_metadata(**overrides: str | _DeleteSentinel):
+    data = {
+        "sample": "test_sample",
+        "strain": "strain_name",
+        "sample_name": "test_sample",
+        "spuid": "spuid",
+        "spuid_namespace": "some_namespace",
+        "bioproject": "PRJNA000000",
+        "author": "CDC",
+        "serovar": "serovar_name",
+        "source_type": "food",
+        "isolate_name_alias": "test_sample",
+        "isolation_source": "source",
+        "geo_loc_name": "USA:TX",
+        "organism": "Escherichia coli",
+        "collection_date": "2025-01-01",
+        "collected_by": "collector",
+        "project_name": "project",
+        "sequenced_by": "sequencer",
+        "intended_consumer": "missing",
+        "food_origin": "origin",
+        "food_processing_method": "food_proc_method",
+        "purpose_of_sampling": "purpose",
+    }
+    for key, value in overrides.items():
+        if isinstance(value, _DeleteSentinel):
+            data.pop(key, None)
+        else:
+            data[key] = value
+    return Metadata(data, package=BioSamplePackage.OHE)
+
+
 def valid_ill_sra_metadata(**overrides: str | _DeleteSentinel):
     data = {
         "file1": "r1.fq",

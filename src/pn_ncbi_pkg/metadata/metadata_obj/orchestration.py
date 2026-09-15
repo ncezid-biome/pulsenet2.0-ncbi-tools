@@ -5,12 +5,15 @@ from typing import TYPE_CHECKING
 from pn_ncbi_pkg.result import Err, Ok
 from pn_ncbi_pkg.submission import SubmissionDB
 
-from ..result_types import MetadataFailure, MetadataIssue, MetadataPatch
+from ..result_types import (
+    MetadataAnnotation,
+    MetadataFailure,
+    MetadataIssue,
+)
 from ..rules.defaults import get_default_rules
 from ..rules.standardization import get_standardization_rules
 from ..rules.validation import (
     get_edit_validation_rules,
-    get_patch_fields_validation_rules,
     get_validation_rules,
 )
 from .model import Metadata
@@ -35,6 +38,7 @@ def run_transforms(
     Transform rules may add, replace, or remove fields.
     If any transform fails, stop before later phases.
     """
+    metadata = metadata.copy()
     for rule in rules:
         match rule(metadata):
             case Ok(patch):
@@ -121,28 +125,41 @@ def prepare_metadata_for_submission(metadata: Metadata, submission_type: Submiss
         case Err(failure):
             return Err(failure)
 
+def validate_existing_biosample_xml(metadata: Metadata) -> MetadataAnnotation:
+    """validate existing biosample xml metadata
 
-def prepare_metadata_for_edit(existing_meta: Metadata, update_meta: Metadata) -> MetadataResult:
-    """validate existing data, standardize and apply metadata patch, then validate patched metadata
+    Returns the validated metadata or validation issues.
+    """
+    defaults = get_default_rules(SubmissionDB.BIOSAMPLE, metadata.package)
+    validators = get_validation_rules(SubmissionDB.BIOSAMPLE, metadata.package)
+
+    match run_transforms(metadata, defaults):
+            case Ok(transformed):
+                changes = {k: transformed[k] for k in transformed.keys() - metadata.keys()}
+                changes |= {
+                    k: transformed[k] for k in metadata.keys() & transformed.keys() if metadata.get(k) != transformed[k]
+                }
+                metadata = transformed
+            case Err(failure):
+                return MetadataAnnotation(metadata, issues=failure)
+
+    match run_validations(metadata, validators):
+        case Ok():
+            return MetadataAnnotation(metadata, changes=changes)
+        case Err(failure):
+            for issue in failure.issues:
+                metadata[issue.field]= ""
+            return MetadataAnnotation(metadata, changes=changes, issues=failure)
+
+def prepare_edited_metadata_for_submission(update_meta: Metadata) -> MetadataResult:
+    """validate edited metadata for biosample resubmission
 
     defaults are not applied to avoid silently editing existing metadata with values other than
     those explicitly provided by the user in their patch
 
     Returns a standardized, validated copy of the patched metadata.
     """
-    target_package = update_meta.package or existing_meta.package
-
-    # Check if any current fields have validation errors
-    existing_validators = get_validation_rules(submission_type=SubmissionDB.BIOSAMPLE, metadata_package=target_package)
-
-    existing_failure = None
-    match run_validations(existing_meta, existing_validators):
-        case Ok():
-            # nothing to do
-            pass
-        case Err(failure):
-            # store these to check if the update fixes them all
-            existing_failure = failure
+    target_package = update_meta.package
 
     # standardize update metadata
     cleaned_update_meta = Metadata(update_meta.copy(), package=target_package)
@@ -153,45 +170,16 @@ def prepare_metadata_for_edit(existing_meta: Metadata, update_meta: Metadata) ->
         case Err(failure):
             return Err(failure)
 
-    # validate edit
-    edit_validators = get_patch_fields_validation_rules()
-    match run_edit_validations(existing_meta, cleaned_update_meta, edit_validators):
-        case Ok():
-            # good to proceed
-            pass
-        case Err(failure):
-            return Err(failure)
-
-    # patch existing meta and overwrite with new package (if different)
-    patch = MetadataPatch(cleaned_update_meta)
-    patched_meta = Metadata(existing_meta.copy(), package=target_package)
-    patched_meta.apply(patch)
-
-    # run ordinary validations for this package
+    # validate the editted metadata against the target package
     validators = (
         get_validation_rules(SubmissionDB.BIOSAMPLE, target_package)
         + get_edit_validation_rules()
     )
-
-    match run_validations(patched_meta, validators):
+    match run_validations(cleaned_update_meta, validators):
         case Ok():
-            # either no issues, or patch fixed existing issues
-            return Ok(patched_meta)
+            return Ok(cleaned_update_meta)
         case Err(failure):
-            if existing_failure is None:
-                # No existing failures to compare new ones against
-                return Err(failure)
-
-            # otherwise we need to figure out where the failure arose
-            patched_failure = failure
-
-            return Err(
-                _rewrite_preexisting_failures(
-                    existing_failure,
-                    patched_failure,
-                    set(cleaned_update_meta)
-                )
-            )
+            return Err(failure)
 
 def _rewrite_preexisting_failures(
     existing_failure: MetadataFailure,

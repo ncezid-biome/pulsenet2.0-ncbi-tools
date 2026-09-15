@@ -5,7 +5,6 @@ from ..packages import BioSamplePackage
 
 @dataclass(frozen=True)
 class BioSampleRecord:
-    biosample: str
     bioproject: str
     spuid: str
     spuid_namespace: str

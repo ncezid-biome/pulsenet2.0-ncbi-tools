@@ -36,7 +36,6 @@ BS_PATH_MANDATORY = (
 
 ### Mandatory OneHealthEnteric.1.0
 BS_OHE_MANDATORY = (
-    MandatoryField(field="isolation_source"),
     MandatoryField(field="source_type"),
     MandatoryField(field="strain"),
 )
