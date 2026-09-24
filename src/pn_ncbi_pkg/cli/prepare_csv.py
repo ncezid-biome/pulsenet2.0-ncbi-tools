@@ -119,9 +119,9 @@ def run(args: argparse.Namespace) -> int:
         row.pop("file_path", None)
         for n, read in enumerate(prepped_reads, start=1):
             row[f"file{n}"] = read.name
-
-    for column in args.drop_column:
-        row.pop(column, None)
+    if args.drop_column:
+        for column in args.drop_column:
+            row.pop(column, None)
 
     write_one_row_csv(row, args.out_csv)
     return 0
